@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+  - "6"
+script:
+  - echo $KEY > ~/.ssh/id_rsa && chmod 400 ~/.ssh/id_rsa
+  - npm install -g hexo-cli && npm install hexo-deployer-git --save
+  - hexo generate && hexo deploy
