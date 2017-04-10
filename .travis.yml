@@ -4,4 +4,6 @@ node_js:
 script:
   - echo $KEY > ~/.ssh/id_rsa && chmod 400 ~/.ssh/id_rsa
   - npm install -g hexo-cli && npm install hexo-deployer-git --save
+  - git config --global user.email "tiny1990@126.com"
+  - git config --global user.name "p_max"
   - hexo generate && hexo deploy
