@@ -1,6 +1,7 @@
 ---
 title: Hello World
 categories: HelloWorld
+tags: [HelloWorld]
 ---
 ```
 
