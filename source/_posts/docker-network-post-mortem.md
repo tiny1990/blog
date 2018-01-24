@@ -127,8 +127,8 @@ docker 单机模式，就是利用linxu network namespace 将 container和宿主
 # ip netns list
 # ls /var/run/netns
 ```
-/var/run/netns 可以看到两个由 ```ip netns ``` 创建的两个namespace  
-使用 ```ip netns exec container-1 ip addr``` 查看namespace网卡信息
+/var/run/netns 可以看到两个由 ip netns  创建的两个namespace  
+使用 ip netns exec container-1 ip addr 查看namespace网卡信息
 ```
 1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -151,7 +151,7 @@ docker 单机模式，就是利用linxu network namespace 将 container和宿主
 # route -n
 172.16.0.0      0.0.0.0         255.255.0.0     U     0      0        0 br0
 ```
-> 此刻 如果```ip addr add ```多个ip，会出现由ip 处于```secondary ``` 状态
+> 此刻 如果 ip addr add 多个ip，会出现由ip 处于 secondary  状态
 
 拓扑图
 ![network-space-2](/img/docker/network-space-2.png)
@@ -181,14 +181,14 @@ docker 单机模式，就是利用linxu network namespace 将 container和宿主
 # ip netns exec container-2 ip link set eth0 up
 # ip netns exec container-2 ip addr add 172.16.1.3/16 dev eth0
 ```
-最终实现所有拓扑，使用```ip netns exec container-1 ping  172.16.1.3``` 验证网络互通
+最终实现所有拓扑，使用 ip netns exec container-1 ping  172.16.1.3 验证网络互通
 
 ## 验证docker local network
-docker 的namespace 在 ```/var/run/docker/netns ```，所以使用 ```ip netns list ```  并不能看到docker创建的namespace  
+docker 的namespace 在 /var/run/docker/netns ，所以使用 ip netns list   并不能看到docker创建的namespace  
 查看docker nanemspac需要:
-1. ```ln -s /var/run/docker/netns /var/run/netns``` ，再使用 ip netns list 即可看到每个容器的namespace
-2. ```docker inspect -f '{{.NetworkSettings.SandboxKey}}' container-id``` 获取namespaceid
-3. ```ip netns exec namespaceid ip addr ``` 
+1. ln -s /var/run/docker/netns /var/run/netns ，再使用 ip netns list 即可看到每个容器的namespace
+2. docker inspect -f '{{.NetworkSettings.SandboxKey}}' container-id 获取namespaceid
+3. ip netns exec namespaceid ip addr  
 
 ## 提高
 自己动手抓取container 数据包
