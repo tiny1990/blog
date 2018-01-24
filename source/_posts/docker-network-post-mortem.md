@@ -12,9 +12,11 @@ DpInc 整个系统跑在docker swarm mode，在第30天时出现sourcemysql容�
 
 ![docker](/img/docker/network-1.png)
 
-- swarm-01 可以访问在```swarm-00``` 上的```container-1``` 服务
-- swarm-02 可以访问在```swarm-00``` 上的```container-2``` 服务
-- swarm-02 <font color=red>不能</font>访问在```swarm-00``` 上的```container-1``` 服务 
+```
+$ swarm-01 可以访问在```swarm-00``` 上的```container-1``` 服务
+$ swarm-02 可以访问在```swarm-00``` 上的```container-2``` 服务
+$ swarm-02 访问在```swarm-00``` 上的```container-1``` 服务 
+```
 
 ## 排错过程
 
@@ -25,7 +27,7 @@ DpInc 整个系统跑在docker swarm mode，在第30天时出现sourcemysql容�
 ```
 iptables规则正常
 
-2. 检查```swarm00```机器```container-1``` iptables 和 router 正常
+2. 检查 swarm00 机器 container-1 iptables 和 router 正常
 ```
 # docker inspect 9a556e2998b5 | grep /var/run
 "SandboxKey": "/var/run/docker/netns/7ca58b86b82c",
@@ -54,14 +56,14 @@ Chain OUTPUT (policy ACCEPT 19M packets, 1662M bytes)
 # tcpdump -i eth0 -w /tmp/tcpdump.pack
 ```
 发现数据异常
-![tcpdump](./img/docker/tcpdump.jpeg)
+![tcpdump](/img/docker/tcpdump.jpeg)
 
 问出处在握手包上，每次```swarm02```主动握手，都会被```rst``` ,```rst ```包通常情况出现在:
 1. 端口未打开 
 2. 请求超时
 3. 提前关闭 
 4. 其他原因 http://windtear.net/2009/10/iptables_drop_reset.html  
-排除 ```1``` ```2```,因为```swarm-02```可以正常访问，可能出现在 ```3```,```4```上，提前关闭不太能，因为有机器能访问swarm00，使用 ```4```给出链接解决
+排除  1 2 ,因为 swarm-02 可以正常访问，可能出现在 3 , 4 上，提前关闭不太能，因为有机器能访问swarm00，使用 4 给出链接解决
 ```
 简单解决是忽略这种类型的全部 RST 包
 iptables -I INPUT -p tcp --tcp-flags SYN,FIN,RST,URG,PSH RST -j DROP
@@ -69,7 +71,7 @@ iptables -I INPUT -p tcp --tcp-flags SYN,FIN,RST,URG,PSH RST -j DROP
 
 ## 是否完全解决
 否  
-调研了下关于tcp ```rst ```方面的知识，很少有出现在tcp 握手时刻被rst的，引发问题真正原因可能是docker swarm 的bug
+调研了下关于tcp rst 方面的知识，很少有出现在tcp 握手时刻被rst的，引发问题真正原因可能是docker swarm 的bug
 
 ## 最终处理方案
 - 升级了docker，新版本对network有改动，有人提tcp rst相关的issue
