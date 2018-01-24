@@ -10,7 +10,7 @@ tags: [docker swarm]
 ## 故障描述
 DpInc 整个系统跑在docker swarm mode，在第30天时出现sourcemysql容器(容器所在机器名swarm02)不能访问schemaregistry容器(容器所在机器swarm00)的8081端口。
 
-![docker](./img/docker/network-1.png)
+![docker](/img/docker/network-1.png)
 
 - swarm-01 可以访问在```swarm-00``` 上的```container-1``` 服务
 - swarm-02 可以访问在```swarm-00``` 上的```container-2``` 服务
