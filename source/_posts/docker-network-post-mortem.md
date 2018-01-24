@@ -48,7 +48,7 @@ Chain OUTPUT (policy ACCEPT 19M packets, 1662M bytes)
  8758  695K ACCEPT     tcp  --  *      *       10.255.0.18          0.0.0.0/0            tcp spt:8081 ctstate ESTABLISHED
 ```
 
-3. 抓取```swarm02 ```container访问```swam00```container 数据包
+3. 抓取 swarm02 container访问 swam00 container 数据包
 ```
 更换阿里源提速
 # echo 'deb http://mirrors.aliyun.com/debian jessie main' > /etc/apt/sources.list
@@ -58,7 +58,7 @@ Chain OUTPUT (policy ACCEPT 19M packets, 1662M bytes)
 发现数据异常
 ![tcpdump](/img/docker/tcpdump.jpeg)
 
-问出处在握手包上，每次```swarm02```主动握手，都会被```rst``` ,```rst ```包通常情况出现在:
+问出处在握手包上，每次 swarm02 主动握手，都会被 rst , rst 包通常情况出现在:
 1. 端口未打开 
 2. 请求超时
 3. 提前关闭 
