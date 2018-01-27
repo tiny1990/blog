@@ -3,6 +3,7 @@ node_js:
   - "6"
 before_install:
   - echo $KEY | base64 -D > ~/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
+  - echo $KEY
   - cat  ~/.ssh/id_rsa
   - npm install -g hexo-cli && npm install hexo-deployer-git --save
   - npm install hexo-generator-feed --save
