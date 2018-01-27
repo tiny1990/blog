@@ -2,7 +2,7 @@
 title: [docker swarm 遇到的一次坑] 
 categories: docker
 date: 2017-07-23 00:46:11
-tags: [docker swarm]
+tags: [docker-swarm]
 ---
 
 # docker swarm network 故障
