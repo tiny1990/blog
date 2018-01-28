@@ -105,7 +105,7 @@ sudo vi /lib/systemd/system/flanneld.service
 ```
 启动正常
 ```
-[root@VM_132_198_centos ~]# systemctl status flanneld
+[root@VM_132_1_centos ~]# systemctl status flanneld
 ● flanneld.service - Flannel Network Fabric
    Loaded: loaded (/usr/lib/systemd/system/flanneld.service; enabled; vendor preset: disabled)
    Active: active (running) since Sun 2018-01-28 09:25:04 CST; 41s ago
@@ -114,11 +114,81 @@ sudo vi /lib/systemd/system/flanneld.service
    CGroup: /system.slice/flanneld.service
            └─9450 /usr/bin/flanneld --etcd-endpoints=http://10.144.132.1:2379
 ```
-此时物理机会增加一块虚拟网卡,稍后我们看路由状态
+此时物理机会增加一块虚拟网卡
 ```
-[root@VM_132_198_centos ~]# ip addr
+[root@VM_132_1_centos ~]# ip addr
 3: flannel0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1472 qdisc pfifo_fast state UNKNOWN qlen 500
     link/none
     inet 10.0.38.0/16 scope global flannel0
        valid_lft forever preferred_lft forever
+```
+- 查看网络变化
+```
+ [root@VM_132_1_centos ~]# ethtool -i flannel0
+ driver: tun
+ version: 1.6
+ firmware-version:
+ expansion-rom-version:
+ bus-info: tun
+ supports-statistics: no
+ supports-test: no
+ supports-eeprom-access: no
+ supports-register-dump: no
+ supports-priv-flags: no
+ [root@VM_132_1_centos ~]# ip route
+ default via 10.144.128.1 dev eth0
+ 10.0.0.0/16 dev flannel0  proto kernel  scope link  src 10.0.38.0
+```
+- 跨机器网络可以通
+```
+[root@VM_132_1_centos ~]# ping 10.0.89.0
+PING 10.0.89.0 (10.0.89.0) 56(84) bytes of data.
+64 bytes from 10.0.89.0: icmp_seq=1 ttl=62 time=0.340 ms
+```
+
+# 集成docker
+- 安装docker，就用官方最快速的方法安装了
+```
+[root@VM_132_1_centos ~]# yum install -y yum-utils \
+  device-mapper-persistent-data \
+  lvm2
+[root@VM_132_1_centos ~]# yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+[root@VM_132_1_centos ~]# yum install docker-ce    
+```
+- 生成dockerd需要的配置,也可以直接用/run/flannel/subnet.env
+```
+[root@VM_132_1_centos ~]# ./mk-docker-opts.sh
+[root@VM_132_1_centos ~]# cat /run/docker_opts.env
+DOCKER_OPT_BIP="--bip=10.0.38.1/24"
+DOCKER_OPT_IPMASQ="--ip-masq=true"
+DOCKER_OPT_MTU="--mtu=1472"
+DOCKER_OPTS=" --bip=10.0.38.1/24 --ip-masq=true --mtu=1472"
+```
+- 修改dockerd参数，在servoce中添加两行,启动docker
+```
+[root@VM_132_1_centos ~]# /usr/lib/systemd/system/docker.service
+EnvironmentFile=/run/flannel/subnet.env
+ExecStart=/usr/bin/dockerd --bip=${FLANNEL_SUBNET} --mtu=${FLANNEL_MTU}
+[root@VM_132_1_centos ~]# systemctl daemon-reload
+[root@VM_132_1_centos ~]# systemctl start docker
+[root@VM_132_1_centos ~]# systemctl status docker
+[root@VM_132_1_centos ~]# ip addr
+4: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN
+    link/ether 02:42:16:0d:1c:df brd ff:ff:ff:ff:ff:ff
+    inet 10.0.38.1/24 brd 10.0.38.255 scope global docker0
+       valid_lft forever preferred_lft forever
+```
+- 测试跨主机 docker0 是否能ping通
+```
+[root@VM_132_1_centos ~]# ping 10.0.89.1
+PING 10.0.89.1 (10.0.89.1) 56(84) bytes of data.
+64 bytes from 10.0.89.1: icmp_seq=1 ttl=62 time=0.363 ms
+```
+- 测试 ip per continer,能访问ng
+```
+[root@VM_132_1_centos ~]# docker run -d --name ng1 nginx
+[root@VM_132_1_centos ~]# docker inspect ng1 | grep IPAddress
+[root@VM_198_1_centos ~]# curl ng1-ip
 ```
