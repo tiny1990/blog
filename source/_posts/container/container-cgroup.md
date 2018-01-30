@@ -18,4 +18,21 @@ tags: [总结2017知识点]
 4. 为什么 使用travis 自动化部署博客
   懒
 
+# cgroup 层级规则
+## n个子系统可以附加到单层上
+![cgroup_rule_1](/img/container/cgroup_rule_1.png)
+> cpu memory 可以挂到单层上，前提是这个子系统没有附加到到其他层级上
+
+## 一个子系统不能同时附加到到多个层上
+![cgroup_rule_2](/img/container/cgroup_rule_2.png)
+> 单系统不能同时附加到一层或多层，如果被附加层已经附加了其他单系统
+
+## 一个task 可以在多个层级
+![ccgroup_rule_3](/img/container/cgroup_rule_3.png)
+> 同一个task不能同一层级的不同group，但可以在不同层级
+
+## fork出来的task，继承同一cgroup
+![ccgroup_rule_3](/img/container/cgroup_rule_4.png)
+> 可以机那个task移动到不同group中
+
 
