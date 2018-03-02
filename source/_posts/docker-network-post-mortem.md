@@ -12,7 +12,7 @@ DpInc 整个系统跑在docker swarm mode，在第30天时出现sourcemysql容�
 
 ![docker](/img/docker/network-1.png)
 
-```
+```shell
 $ swarm-01 可以访问在```swarm-00``` 上的```container-1``` 服务
 $ swarm-02 可以访问在```swarm-00``` 上的```container-2``` 服务
 $ swarm-02 访问在```swarm-00``` 上的```container-1``` 服务 
@@ -20,8 +20,9 @@ $ swarm-02 访问在```swarm-00``` 上的```container-1``` 服务
 
 ## 排错过程
 
-1. 检查```swarm00```机器 iptables``` iptables -nvL | grep "8081" ``` 查看机器上8081端口是否被reject
-```
+1. 检查 swarm00 机器 iptables iptables -nvL | grep "8081"  查看机器上8081端口是否被reject
+
+```shell
  3538  250K ACCEPT     tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:8081
  2747  222K ACCEPT     tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            state RELATED,ESTABLISHED tcp spt:8081
 ```
