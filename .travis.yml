@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "6"
 before_install:
-   - curl -v
+   - curl -V
    - curl -6 'http://[2408:8207:6071:9e70:ac94:710d:8a8f:834d]:8000'
 #  - echo $KEY | base64 -d > ~/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
 #  - npm install -g hexo-cli && npm install hexo-deployer-git --save
