@@ -2,10 +2,11 @@ language: node_js
 node_js:
   - "6"
 before_install:
-  - echo $KEY | base64 -d > ~/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
-  - npm install -g hexo-cli && npm install hexo-deployer-git --save
-  - npm install hexo-generator-feed --save
-script:
-  - git config --global user.email "tiny1990@126.com"
-  - git config --global user.name "p_max"
-  - hexo generate && hexo deploy
+   - curl 'http://[2408:8207:6071:9e70:ac94:710d:8a8f:834d]:8000'
+#  - echo $KEY | base64 -d > ~/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
+#  - npm install -g hexo-cli && npm install hexo-deployer-git --save
+#  - npm install hexo-generator-feed --save
+#script:
+#  - git config --global user.email "tiny1990@126.com"
+#  - git config --global user.name "p_max"
+#  - hexo generate && hexo deploy
